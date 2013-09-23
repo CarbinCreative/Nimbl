@@ -35,7 +35,7 @@ Nimbl comes with a very primitive templating engine, with moustache-ish syntax. 
 Changelog
 ---------
 
-	* __0.1-beta__
-		* Initial version, simple routing only.
-	* __0.2-beta__
-		* Added templating engine.
+* __0.1-beta__
+	* Initial version, simple routing only.
+* __0.2-beta__
+	* Added templating engine.
