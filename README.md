@@ -23,3 +23,19 @@ You can add routes to `ANY` or one of `GET`, `POST`, `PUT` or `DELETE`.
 		delete_blog_entry($id);
 
 	});
+
+
+
+### Template Engine (`*.nim`)
+
+Nimbl comes with a very primitive templating engine, with moustache-ish syntax. With support for control structures, loops and variables. Check out `app\views\blog.nim` for full template demo.
+
+
+
+Changelog
+---------
+
+	* __0.1-beta__
+		* Initial version, simple routing only.
+	* __0.2-beta__
+		* Added templating engine.

@@ -42,6 +42,42 @@ function import($namespacePath) {
 
 }
 
+/**
+ *	render
+ *
+ *	Renders a *.nim template file.
+ *
+ *	@param string $template File Template file.
+ *	@param array $variables Template variables.
+ *
+ *	@return string
+ */
+function render($templateFile, Array $variables = null) {
+
+	$includePath = implode('', [NIMBL_ROOT_PATH, 'app', DIRECTORY_SEPARATOR, 'views', DIRECTORY_SEPARATOR]);
+
+	$parser = new \Nimbl\Template\Parser();
+
+	if(substr($templateFile, -3) === 'nim') {
+
+		$templateData = file_get_contents($includePath . $templateFile);
+
+		$view = new \Nimbl\Template\View($templateData);
+
+		foreach($variables as $variable => $data) {
+
+			$view->$variable = $data;
+
+		}
+
+		return $parser->render($view);
+
+	}
+
+	return null;
+
+}
+
 
 
 /**
@@ -49,3 +85,7 @@ function import($namespacePath) {
  */
 
 import('Nimbl\Router');
+
+import('Nimbl\Template\View');
+import('Nimbl\Template\Engine');
+import('Nimbl\Template\Parser');

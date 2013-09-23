@@ -19,20 +19,29 @@ if(!defined('NIMBL_ROOT_PATH')) exit;
 // Default route
 Nimbl\Router::any('/', function() {
 
-	return 'Nimbl 0.1&beta;';
+	echo render('app.nim', [
+		'title' => 'Nimbl 0.2&beta;'
+	]);
 
 });
 
 // 404 Not Found route
 Nimbl\Router::any('404', function() {
 
-	return '404 Not Found';
+	echo render('app.nim', [
+		'title' => '404 Not Found'
+	]);
 
 });
 
-// Test POST to base request
-Nimbl\Router::post('/', function() {
+// Default route
+Nimbl\Router::any('blog', function() {
 
-	return "Postin' some dataz!";
+	echo render('blog.nim', [
+		'title' => 'Nimbl Blog',
+		'entries' => [
+			['title' => 'Hello World', 'body' => 'This is a quick demonstration of Nimbl routing and *.nim template engine.']
+		]
+	]);
 
 });

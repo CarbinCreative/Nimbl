@@ -28,7 +28,7 @@ try {
 	require_once NIMBL_ROOT_PATH . 'routes.php';
 
 	// Dispatch router
-	echo Nimbl\Router::dispatch();
+	Nimbl\Router::dispatch();
 
 } catch(Exception $exception) {
 
