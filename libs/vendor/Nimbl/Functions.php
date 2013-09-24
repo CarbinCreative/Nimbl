@@ -6,7 +6,7 @@
  *
  *	@author Robin Grass <http://uiux.se/>
  *
- *	@link https://github.com/CarbinCreative/nimbl
+ *	@link https://github.com/CarbinCreative/Nimbl
  *
  *	@license http://opensource.org/licenses/MIT MIT
  */
@@ -15,116 +15,87 @@
 if(!defined('NIMBL_ROOT_PATH')) exit;
 
 
-
 /**
- *	render
+ *	url
  *
- *	Renders a *.nim template file.
- *
- *	@param string $template File Template file.
- *	@param array $variables Template variables.
+ *	Returns full URL, excluding fragment and credentials as these are not supported by PHP.
  *
  *	@return string
  */
-function render($templateFile, Array $variables = null) {
+function url() {
 
-	$includePath = implode('', [NIMBL_ROOT_PATH, 'app', DIRECTORY_SEPARATOR, 'views', DIRECTORY_SEPARATOR]);
+	$ssl = (empty($_SERVER['HTTPS']) === true) ? '' : (strtolower($_SERVER['HTTPS']) === 'on') ? 's' : '';
 
-	$parser = new \Nimbl\Template\Parser();
+	$protocol = strtolower($_SERVER['SERVER_PROTOCOL']);
+	$protocol = substr($protocol, 0, strpos($protocol, '/')) . $ssl;
 
-	if(substr($templateFile, -3) === 'nim') {
+	$port = (intval($_SERVER['SERVER_PORT']) === 80) ? '' : (':' . $_SERVER['SERVER_PORT']);
 
-		$templateData = file_get_contents($includePath . $templateFile);
-
-		$view = new \Nimbl\Template\View($templateData);
-
-		foreach($variables as $variable => $data) {
-
-			$view->$variable = $data;
-
-		}
-
-		return $parser->render($view);
-
-	}
-
-	return null;
-
-}
-
-/**
- *	redirect
- *
- *	Redirects, either by a simple refresh or by changing the location header.
- *
- *	@param string $uri URI to redirect to.
- *	@param string $method Redirect method to use, 'location', 'refresh' or 'javascript'.
- *	@param array $params Array containing additional parameters to send.
- *
- *	@return void
- */
-function redirect($uri, $method = null, $params = null) {
-
-	$method = (is_null($method) === true) ? 'location' : $method;
-	$params = (is_null($params) === true) ? [] : $params;
-
-	switch($method) {
-
-		case 'refresh' :
-
-			$delay = (array_key_exists('delay', $params) && isset($params['delay'])) ? $params['delay'] : 0;
-
-			@session_write_close();
-
-			header("Refresh: {$delay}; URL={$uri}");
-			exit;
-
-		break;
-		case 'location' :
-
-			$statusCode = (array_key_exists('httpStatusCode', $params) && isset($params['httpStatusCode'])) ? $params['httpStatusCode'] : 302;
-
-			@session_write_close();
-
-			header("Location: {$uri}", true, $statusCode);
-			exit;
-
-		break;
-		case 'javascript' :
-
-			$delay = $delay = (array_key_exists('delay', $params) && isset($params['delay'])) ? intval($params['delay']) * 1000 : 0;
-
-			echo '<script type="text/javascript">setTimeout(function() { window.location = \'' . $uri . '\'; }, ' . $delay . ');</script>';
-
-		break;
-
-	}
+	$url = $protocol . '://' . $_SERVER['SERVER_NAME'] . $port . $_SERVER['REQUEST_URI'];
 
 }
 
 /**
  *	slug
  *
- *	Creates URL friendly slug from a string.
+ *	Returns an URI friendly "slug" from a string.
  *
- *	@param string $string String to convert to slug.
+ *	@param string $string Unresolved string.
+ *	@param string $delimiter Slug delimiter.
  *
  *	@return string
  */
-function slug($string) {
+function slug($string, $delimiter = '-') {
 
 	return strtolower(
 		trim(
 			preg_replace(
 				'~[^0-9a-z]+~i',
-				'-',
+				$delimiter,
 				preg_replace(
 					'~&([a-z]{1,2})(acute|cedil|circ|grave|lig|orn|ring|slash|th|tilde|uml);~i',
 					'$1',
 					htmlentities($string, ENT_QUOTES, 'UTF-8')
 				)
 			),
-		'-')
+		$delimiter)
 	);
+
+}
+
+/**
+ *	uri
+ *
+ *	Either returns request URI if no argument is provided or returns a valid URI string.
+ *
+ *	@param string $uri Unresolved URI.
+ *
+ *	@return string
+ */
+function uri($uri = null) {
+
+	if(is_null($uri) === true) {
+
+		$requestUri = explode('/', trim($_SERVER['REQUEST_URI'], '/'));
+		$scriptName = explode('/', trim($_SERVER['SCRIPT_NAME'], '/'));
+
+		$segments = array_diff_assoc($requestUri, $scriptName);
+		$segments = array_filter($segments);
+
+		if(empty($segments) === true) {
+
+			return '/';
+
+		}
+
+		$uriPath = implode('/', $segments);
+
+		$uriPath = parse_url($pauriPathth, PHP_URL_PATH);
+
+		return $uriPath;
+
+	}
+
+	return preg_replace('#/+#', '/', trim(slug($uri), '/'));
 
 }

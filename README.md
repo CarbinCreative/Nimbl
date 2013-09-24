@@ -1,34 +1,19 @@
 Nimbl
 =====
 
-Nimbl is a micro framework written in PHP 5.4.
+Nimbl is a micro framework written in PHP 5.4. Nimbl is **REST**ful, easy to use and works well with most modern servers and operating systems.
 
 
-
-### Getting Started
-
-Nimbl is REST-ful, so adding new routes is very easy. Routes also accept _Regular Expressions_, which is pretty nice.
-
-You can add routes to `ANY` or one of `GET`, `POST`, `PUT` or `DELETE`.
-
-	Nimbl\Router::get('/blog', function() {
-
-		list_blog_entries();
-
-	});
-
-	Nimbl\Router::delete('/blog/entry/(\d+)', function($id) {
-
-		delete_blog_entry($id);
-
-	});
+* * *
 
 
+Documentation
+-------------
 
-### Template Engine (`*.nim`)
+Documentation can be found in the __DOCUMENTATION.md__ file.
 
-Nimbl comes with a very primitive templating engine, with moustache-ish syntax. With support for control structures, loops and variables. Check out [app\views\blog.nim](https://github.com/CarbinCreative/Nimbl/blob/master/app/views/blog.nim) for full template demo.
 
+* * *
 
 
 Changelog
@@ -40,3 +25,8 @@ Changelog
 	* Added templating engine.
 * __0.2.1-beta__
 	* Added two new functions, `redirect` and `slug`.
+* __1.0-beta__
+	* Rewrote Nimbl core.
+	* Added autoloading.
+	* Added more functions.
+	* Removed *.nim templating engine (a new one will be introduced in version 1.1).

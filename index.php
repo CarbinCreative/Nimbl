@@ -6,7 +6,7 @@
  *
  *	@author Robin Grass <http://uiux.se/>
  *
- *	@link https://github.com/CarbinCreative/nimbl
+ *	@link https://github.com/CarbinCreative/Nimbl
  *
  *	@license http://opensource.org/licenses/MIT MIT
  */
@@ -16,25 +16,26 @@
  */
 define('NIMBL_ROOT_PATH', dirname(__FILE__) . DIRECTORY_SEPARATOR);
 
+// Set error reporting and display possible errors
+error_reporting(E_ALL);
+ini_set('display_erros', 'On');
+
 try {
 
-	// Get Nimbl library path
-	$libraryPath = implode('', [NIMBL_ROOT_PATH, 'libs', DIRECTORY_SEPARATOR, 'vendor', DIRECTORY_SEPARATOR, 'Nimbl', DIRECTORY_SEPARATOR]);
+	// Load Nimbl bootstrap
+	require_once implode(DIRECTORY_SEPARATOR, [rtrim(NIMBL_ROOT_PATH, DIRECTORY_SEPARATOR), 'libs', 'vendor', 'Nimbl', 'Bootstrap.php']);
 
-	// Require bootstrap
-	require_once $libraryPath . 'Bootstrap.php';
-
-	// Require routes
-	require_once NIMBL_ROOT_PATH . 'routes.php';
+	// Load route definitions
+	require_once path('app/routes.php');
 
 	// Dispatch router
 	Nimbl\Router::dispatch();
 
 } catch(Exception $exception) {
 
-	echo '<pre>';
+	echo '<pre style="font:13px monaco, monospace;">';
 
-	var_dump($exception);
+	print_r($exception);
 
 	echo '</pre>';
 

@@ -6,7 +6,7 @@
  *
  *	@author Robin Grass <http://uiux.se/>
  *
- *	@link https://github.com/CarbinCreative/nimbl
+ *	@link https://github.com/CarbinCreative/Nimbl
  *
  *	@license http://opensource.org/licenses/MIT MIT
  */
@@ -17,10 +17,12 @@ namespace Nimbl;
 /* Deny direct file access */
 if(!defined('NIMBL_ROOT_PATH')) exit;
 
+
+
 /**
  *	Router
  *
- *	Nimbl router class.
+ *	Static routing class.
  *
  *	@package Nimbl
  *
@@ -56,6 +58,16 @@ class Router {
 	const HTTP_DELETE = 'DELETE';
 
 	/**
+	 *	@const string HTTP_HEAD HTTP HEAD request.
+	 */
+	const HTTP_HEAD = 'HEAD';
+
+	/**
+	 *	@const string HTTP_OPTIONS HTTP OPTIONS request.
+	 */
+	const HTTP_OPTIONS = 'OPTIONS';
+
+	/**
 	 *	@var array $routeMaps Route maps.
 	 */
 	public static $routeMaps = [];
@@ -82,23 +94,7 @@ class Router {
 	 */
 	public static function requestPath() {
 
-		$requestUri = explode('/', trim($_SERVER['REQUEST_URI'], '/'));
-		$scriptName = explode('/', trim($_SERVER['SCRIPT_NAME'], '/'));
-
-		$segments = array_diff_assoc($requestUri, $scriptName);
-		$segments = array_filter($segments);
-
-		if(empty($segments) === true) {
-
-			return '/';
-
-		}
-
-		$path = implode('/', $segments);
-
-		$path = parse_url($path, PHP_URL_PATH);
-
-		return $path;
+		return uri();
 
 	}
 
@@ -115,7 +111,11 @@ class Router {
 
 		$requestPath = self::requestPath();
 
-		$routePattern = trim($routePattern, '/');
+		if($routePattern !== '/') {
+
+			$routePattern = trim($routePattern, '/');
+
+		}
 
 		if(is_null($routePattern) === true) {
 
@@ -159,6 +159,12 @@ class Router {
 
 		$reflection = new \ReflectionClass(__CLASS__);
 
+		if($routePattern !== '/') {
+
+			$routePattern = trim($routePattern, '/');
+
+		}
+
 		if(in_array($requestMethod, $reflection->getConstants()) === true) {
 
 			if(array_key_exists($routePattern, self::$routeMaps) === true && is_array(self::$routeMaps[$routePattern]) === false) {
@@ -179,10 +185,11 @@ class Router {
 
 			if($requestMethod === self::HTTP_ANY) {
 
-				self::$routeMaps[$routePattern][self::HTTP_GET] = $requestObject;
-				self::$routeMaps[$routePattern][self::HTTP_POST] = $requestObject;
-				self::$routeMaps[$routePattern][self::HTTP_PUT] = $requestObject;
-				self::$routeMaps[$routePattern][self::HTTP_DELETE] = $requestObject;
+				foreach($reflection->getConstants() as $method) {
+
+					self::$routeMaps[$routePattern][$method] = $requestObject;
+
+				}
 
 			} else {
 
@@ -276,6 +283,40 @@ class Router {
 	public static function delete($routePattern, Callable $callback, Callable $filter = null) {
 
 		return self::route(self::HTTP_DELETE, $routePattern, $callback, $filter);
+
+	}
+
+	/**
+	 *	head
+	 *
+	 *	Shortcut method for HEAD route request. {@see Nimbl\Router::route}
+	 *
+	 *	@param string $routePattern Route map pattern.
+	 *	@param callable $callback Route callback.
+	 *	@param callable $filter Route filter callback.
+	 *
+	 *	@return void
+	 */
+	public static function head($routePattern, Callable $callback, Callable $filter = null) {
+
+		return self::route(self::HTTP_POST, $routePattern, $callback, $filter);
+
+	}
+
+	/**
+	 *	options
+	 *
+	 *	Shortcut method for OPTIONS route request. {@see Nimbl\Router::route}
+	 *
+	 *	@param string $routePattern Route map pattern.
+	 *	@param callable $callback Route callback.
+	 *	@param callable $filter Route filter callback.
+	 *
+	 *	@return void
+	 */
+	public static function options($routePattern, Callable $callback, Callable $filter = null) {
+
+		return self::route(self::HTTP_POST, $routePattern, $callback, $filter);
 
 	}
 

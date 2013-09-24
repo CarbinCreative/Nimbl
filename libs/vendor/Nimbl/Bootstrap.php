@@ -6,7 +6,7 @@
  *
  *	@author Robin Grass <http://uiux.se/>
  *
- *	@link https://github.com/CarbinCreative/nimbl
+ *	@link https://github.com/CarbinCreative/Nimbl
  *
  *	@license http://opensource.org/licenses/MIT MIT
  */
@@ -22,36 +22,78 @@ define('NAMESPACE_SEPARATOR', '\\');
 
 
 /**
- * 	import
+ *	path
  *
- *	Imports any Nimbl-specific class.
+ *	Replaces separator in input path string with DIRECTORY_SEPARATOR.
  *
- *	@param string $namespacePath Namespace include path.
+ *	@param string $path Unresolved path string.
+ *	@param bool $appendDirectorySeparator Flag specifies whether or not to append DIRECTORY_SEPARATOR.
+ *	@param string $separator Path separator.
  *
- *	@return void
+ *	@return string
  */
-function import($namespacePath) {
+function path($path, $appendDirectorySeparator = false, $separator = '/') {
 
-	$namespacePath = trim($namespacePath, NAMESPACE_SEPARATOR);
+	$path = preg_replace('#' . $separator . '+#', $separator, trim($path, $separator));
 
-	$importPath = implode('', [NIMBL_ROOT_PATH, 'libs', DIRECTORY_SEPARATOR, 'vendor', DIRECTORY_SEPARATOR]);
+	$path = NIMBL_ROOT_PATH . trim(str_replace($separator, DIRECTORY_SEPARATOR, trim($path, $separator)), DIRECTORY_SEPARATOR);
 
-	$importPath .= str_ireplace(NAMESPACE_SEPARATOR, DIRECTORY_SEPARATOR, trim($namespacePath, NAMESPACE_SEPARATOR)) . '.php';
+	if($appendDirectorySeparator === true) {
 
-	require_once $importPath;
+		$path .= DIRECTORY_SEPARATOR;
+
+	}
+
+	return $path;
 
 }
 
-
-
 /**
- *	Load required classes
+ *	import
+ *
+ *	Imports a package in libs/vendor.
+ *
+ *	@param string $package Package import path.
+ *
+ *	@return bool
  */
+function import($package) {
 
+	$packagePath = path("libs/vendor/{$package}", false, NAMESPACE_SEPARATOR) . '.php';
+
+	if(file_exists($packagePath) === true) {
+
+		require_once $packagePath;
+
+		return true;
+
+	}
+
+	return false;
+
+}
+
+// Register custom autoloader
+spl_autoload_register(function($className) {
+
+	if(substr(trim($className, NAMESPACE_SEPARATOR), 0, 3) === 'app') {
+
+		$includePath = path('app/controllers/' . trim(substr($className, 3), NAMESPACE_SEPARATOR), false, NAMESPACE_SEPARATOR);
+
+		include_once $includePath . '.php';
+
+		return true;
+
+	} else {
+
+		return import($className);
+
+	}
+
+});
+
+// Import Nimbl functions
 import('Nimbl\Functions');
 
-import('Nimbl\Router');
-
-import('Nimbl\Template\View');
-import('Nimbl\Template\Engine');
-import('Nimbl\Template\Parser');
+// Import Nimbl base
+import('Nimbl\Nimbl');
