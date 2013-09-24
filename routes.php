@@ -20,7 +20,7 @@ if(!defined('NIMBL_ROOT_PATH')) exit;
 Nimbl\Router::any('/', function() {
 
 	echo render('app.nim', [
-		'title' => 'Nimbl 0.2&beta;'
+		'title' => 'Nimbl 0.2.1&beta;'
 	]);
 
 });
