@@ -38,8 +38,5 @@ Changelog
 	* Initial version, simple routing only.
 * __0.2-beta__
 	* Added templating engine.
-<<<<<<< HEAD
 * __0.2.1-beta__
 	* Added two new functions, `redirect` and `slug`.
-=======
->>>>>>> 8246d3242c66e8c952d26dedb831ca596b88fd5e
