@@ -33,6 +33,8 @@ function url() {
 
 	$url = $protocol . '://' . $_SERVER['SERVER_NAME'] . $port . $_SERVER['REQUEST_URI'];
 
+	return $url;
+
 }
 
 /**
@@ -45,21 +47,20 @@ function url() {
  *
  *	@return string
  */
-function slug($string, $delimiter = '-') {
+function slug($string, Array $replace = null, $delimiter = '-') {
 
-	return strtolower(
-		trim(
-			preg_replace(
-				'~[^0-9a-z]+~i',
-				$delimiter,
-				preg_replace(
-					'~&([a-z]{1,2})(acute|cedil|circ|grave|lig|orn|ring|slash|th|tilde|uml);~i',
-					'$1',
-					htmlentities($string, ENT_QUOTES, 'UTF-8')
-				)
-			),
-		$delimiter)
-	);
+	if(is_array($replace) === true) {
+
+		$string = str_replace($replace, ' ', $string);
+
+	}
+
+	$slug = iconv('UTF-8', 'ASCII//TRANSLIT', $string);
+	$slug = preg_replace("%[^-/+|\w ]%", '', $slug);
+	$slug = strtolower(trim($slug, '-'));
+	$slug = preg_replace("/[\/_|+ -]+/", $delimiter, $slug);
+
+	return $slug;
 
 }
 
