@@ -25,6 +25,9 @@ try {
 	// Load Nimbl bootstrap
 	require_once implode(DIRECTORY_SEPARATOR, [rtrim(NIMBL_ROOT_PATH, DIRECTORY_SEPARATOR), 'libs', 'vendor', 'Nimbl', 'Bootstrap.php']);
 
+	// Load configuratons
+	require_once path('app/config.php');
+
 	// Load route definitions
 	require_once path('app/routes.php');
 

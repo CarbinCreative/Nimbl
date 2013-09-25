@@ -25,3 +25,7 @@ Nimbl\Router::any('/', 'app\SampleController::index');
 
 // Error route
 Nimbl\Router::any('/404', 'app\SampleController::error');
+
+// Sample view examples
+Nimbl\Router::any('/samples/native', 'app\SampleController::native');
+Nimbl\Router::any('/samples/markdown', 'app\SampleController::markdown');

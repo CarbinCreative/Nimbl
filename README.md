@@ -30,3 +30,7 @@ Changelog
 	* Added autoloading.
 	* Added more functions.
 	* Removed *.nim templating engine (a new one will be introduced in version 1.1).
+* __1.1-beta__
+	* Added templating engine.
+	* Added custom Markdown parser.
+	* Added more shortcut functions (see DOCUMENTATION.md).

@@ -7,7 +7,24 @@ class SampleController implements \Nimbl\MVC\ControllerInterface {
 
 	public static function index() {
 
-		echo "Hello World!";
+		echo "Nimbl 1.1&beta;";
+
+	}
+
+	public static function native() {
+
+		$model = new SampleModel();
+
+		echo \Nimbl\Renderer::render('samples/native.php', [
+			'title' => 'Native View Sample',
+			'entries' => $model->fetchEntries()
+		]);
+
+	}
+
+	public static function markdown() {
+
+		echo \Nimbl\Renderer::render('samples/markdown.md');
 
 	}
 

@@ -90,12 +90,72 @@ function uri($uri = null) {
 
 		$uriPath = implode('/', $segments);
 
-		$uriPath = parse_url($pauriPathth, PHP_URL_PATH);
+		$uriPath = parse_url($uriPath, PHP_URL_PATH);
 
 		return $uriPath;
 
 	}
 
 	return preg_replace('#/+#', '/', trim(slug($uri), '/'));
+
+}
+
+/**
+ *	segment
+ *
+ *	Returns request URI segment, if it exists.
+ *
+ *	@param int $index Segment index.
+ *
+ *	@return string
+ */
+function segment($index) {
+
+	$segments = explode('/', uri());
+
+	if($index <= 0) {
+
+		$index = 1;
+
+	}
+
+	if($index > 0 && $index <= count($segments)) {
+
+		return $segments[$index];
+
+	}
+
+	return null;
+
+}
+
+/**
+ *	render
+ *
+ *	Shortcut function to invoke view renderers.
+ *
+ *	@param string $viewFile Unrendered view file.
+ *	@param array $variables View variables.
+ *
+ *	@return string
+ */
+function render($viewFile, Array $variables = null) {
+
+	return Nimbl\Renderer::render($viewFile);
+
+}
+
+/**
+ *	markdown
+ *
+ *	Shortcut function to render raw markdown data.
+ *
+ *	@param string $rawData Unrendered view string.
+ *
+ *	@return string
+ */
+function markdown($rawData) {
+
+	return Nimbl\Renderer::output('md', $rawData);
 
 }

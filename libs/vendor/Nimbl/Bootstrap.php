@@ -76,13 +76,18 @@ function import($package) {
 // Register custom autoloader
 spl_autoload_register(function($className) {
 
-	if(substr(trim($className, NAMESPACE_SEPARATOR), 0, 3) === 'app') {
+	if(substr($className, 0, 3) === 'app') {
 
-		$includePath = path('app/controllers/' . trim(substr($className, 3), NAMESPACE_SEPARATOR), false, NAMESPACE_SEPARATOR);
+		if(preg_match('/(controller|model)/i', $className, $match) !== false) {
 
-		include_once $includePath . '.php';
+			$context = strtolower(array_pop($match)) . 's';
+			$className = substr($className, 3);
 
-		return true;
+			$includePath = path("app\\{$context}\\{$className}.php", false, NAMESPACE_SEPARATOR);
+
+			require_once $includePath;
+
+		}
 
 	} else {
 

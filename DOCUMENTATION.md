@@ -7,11 +7,12 @@ This documentation covers Nimbl version __1.x__.
 ## Getting Started
 First off, you'll need to download the latest version of Nimbl from [the Github Repository](https://github.com/CarbinCreative/Nimbl/). After that there is no more setup. You might, however want to create a `.htaccess`-file with the following commands.
 
-    RewriteEngine On
-    RewriteCond %{REQUEST_FILENAME} !-f
-    RewriteCond %{REQUEST_FILENAME} !-d
-    RewriteRule ^(.*)$ /index.php?/$1 [L]
-
+```
+RewriteEngine On
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ /index.php?/$1 [L]
+```
 
 ***
 
@@ -39,6 +40,18 @@ __slug__(`$string, $delimiter = '-'`)
 
 _Returns an URI friendly "slug" from a string._
 
+__segment__(`$index`)
+
+_Returns request URI segment, if it exists._
+
+__render__(`$viewFile, Array $variables = null`)
+
+_Shortcut function to invoke view renderers._
+
+__markdown__(`$rawData`)
+
+_Shortcut function to render raw markdown data._
+
 
 ***
 
@@ -50,9 +63,11 @@ Defining a new route is done by calling the request method (in lowercase) you wa
 
 Here's a very simple route definiton;
 
-    Nimbl\Router::get('/coffee', function() { /* Code here */ });
-    // or
-    Nimbl\Router::options('/tea', function() { /* Code here */ });
+```php
+Nimbl\Router::get('/coffee', function() { /* Code here */ });
+// or
+Nimbl\Router::options('/tea', function() { /* Code here */ });
+```
 
 The second parameter is `callable` type hint introduced in PHP 5.4, therefore you can either pass in an anonymous function, a string (`MyClass::myMethod`) or even an array (`[$myObject, 'myMethod']`). This also applies to the third parameter which is _filter_.
 
@@ -61,19 +76,36 @@ Route filters are just a simple (or not) callback which **MUST** return a boolea
 
 Defining a new filter could be something like this;
 
-  Nimbl\Router::post('/data', 'App::postData', function() {
+```php
+Nimbl\Router::post('/data', 'App::postData', function() {
 
-      return (userIsLoggedIn() && dataIsValid());
+  return (userIsLoggedIn() && dataIsValid());
 
-  });
+});
+```
 
 ### Regular Expressions
 
 Nimbl has support for regular expressions in route paths, regex captures are passed through as arguments for callback functions.
 It may look something like this;
 
-	Nimbl\Router::get('/user/(\w+)', 'App::showUser', function($username) {
+```php
+Nimbl\Router::get('/user/(\w+)', 'App::showUser', function($username) {
 
-		return renderView('profilePage', $username);
+  return renderView('profilePage', $username);
 
-  });
+});
+```
+
+* * *
+
+## Rendering
+
+Nimbl comes with two different methods of rendering views, either native, which are just plain PHP files and also Markdown. The markdown parser is it's own interpetation of markdown and is not as complex as most other markdown parsers.
+
+These parsers listen to the file name of input file into `render`.
+
+```php
+echo render('some_file.md'); // would render a markdown file
+echo render('some_other_file.php'); // would render native file
+```
