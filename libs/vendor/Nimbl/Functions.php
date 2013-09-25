@@ -141,7 +141,7 @@ function segment($index) {
  */
 function render($viewFile, Array $variables = null) {
 
-	return Nimbl\Renderer::render($viewFile);
+	return Nimbl\Renderer::render($viewFile, $variables);
 
 }
 
