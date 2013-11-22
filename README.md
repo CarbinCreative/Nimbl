@@ -4,16 +4,12 @@ Nimbl
 Nimbl is a micro framework written in PHP 5.4. Nimbl is **REST**ful, easy to use and works well with most modern servers and operating systems.
 
 
-* * *
-
 
 Documentation
 -------------
 
-Documentation can be found in the __DOCUMENTATION.md__ file.
+Documentation can be found in the [DOCUMENTATION][] file.
 
-
-* * *
 
 
 Changelog
@@ -33,4 +29,6 @@ Changelog
 * __1.1-beta__
 	* Added templating engine.
 	* Added custom Markdown parser.
-	* Added more shortcut functions (see DOCUMENTATION.md).
+	* Added more shortcut functions (see [DOCUMENTATION][]).
+
+[DOCUMENTATION]: https://github.com/CarbinCreative/Nimbl/blob/master/DOCUMENTATION.md

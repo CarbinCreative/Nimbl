@@ -33,44 +33,26 @@ if(!defined('NIMBL_ROOT_PATH')) exit;
 class Router {
 
 	/**
-	 *	@const bool HTTP_ANY Any type of HTTP request.
-	 */
-	const HTTP_ANY = true;
-
-	/**
-	 *	@const string HTTP_GET HTTP GET request.
-	 */
-	const HTTP_GET = 'GET';
-
-	/**
-	 *	@const string HTTP_POST HTTP POST request.
-	 */
-	const HTTP_POST = 'POST';
-
-	/**
-	 *	@const string HTTP_PUT HTTP PUT request.
-	 */
-	const HTTP_PUT = 'PUT';
-
-	/**
-	 *	@const string HTTP_DELETE HTTP DELETE request.
-	 */
-	const HTTP_DELETE = 'DELETE';
-
-	/**
-	 *	@const string HTTP_HEAD HTTP HEAD request.
-	 */
-	const HTTP_HEAD = 'HEAD';
-
-	/**
-	 *	@const string HTTP_OPTIONS HTTP OPTIONS request.
-	 */
-	const HTTP_OPTIONS = 'OPTIONS';
-
-	/**
-	 *	@var array $routeMaps Route maps.
+	 *	@var array $routeMaps Registered route maps.
 	 */
 	public static $routeMaps = [];
+
+	/**
+	 *	requestMethods
+	 *
+	 *	Returns valid request methods.
+	 *
+	 *	@return string
+	 */
+	public static function requestMethods() {
+
+		$nimbl = \Nimbl::getInstance();
+
+		$nimbl->httpClient->prepare();
+
+		return $nimbl->httpClient->requestMethods();
+
+	}
 
 	/**
 	 *	requestMethod
@@ -81,14 +63,16 @@ class Router {
 	 */
 	public static function requestMethod() {
 
-		return $_SERVER['REQUEST_METHOD'];
+		$nimbl = \Nimbl::getInstance();
+
+		return $nimbl->httpClient->getMethod();
 
 	}
 
 	/**
 	 *	requestPath
 	 *
-	 *	Returns current request path.
+	 *	Returns current request path, uses {@see uri}.
 	 *
 	 *	@return string
 	 */
@@ -157,15 +141,13 @@ class Router {
 	 */
 	public static function route($requestMethod, $routePattern, Callable $callback, Callable $filter = null) {
 
-		$reflection = new \ReflectionClass(__CLASS__);
-
 		if($routePattern !== '/') {
 
 			$routePattern = trim($routePattern, '/');
 
 		}
 
-		if(in_array($requestMethod, $reflection->getConstants()) === true) {
+		if(in_array($requestMethod, self::requestMethods()) === true || $requestMethod === 'ANY') {
 
 			if(array_key_exists($routePattern, self::$routeMaps) === true && is_array(self::$routeMaps[$routePattern]) === false) {
 
@@ -183,9 +165,9 @@ class Router {
 				'parameters' => $requestParameters
 			];
 
-			if($requestMethod === self::HTTP_ANY) {
+			if($requestMethod === 'ANY') {
 
-				foreach($reflection->getConstants() as $method) {
+				foreach(self::requestMethods() as $method) {
 
 					self::$routeMaps[$routePattern][$method] = $requestObject;
 
@@ -202,121 +184,26 @@ class Router {
 	}
 
 	/**
-	 *	any
+	 *	Static Call
 	 *
-	 *	Shortcut method for any type of route request. {@see Nimbl\Router::route}
+	 *	Registers route based on HTTP request method.
 	 *
-	 *	@param string $routePattern Route map pattern.
-	 *	@param callable $callback Route callback.
-	 *	@param callable $filter Route filter callback.
-	 *
-	 *	@return void
-	 */
-	public static function any($routePattern, Callable $callback, Callable $filter = null) {
-
-		return self::route(self::HTTP_ANY, $routePattern, $callback, $filter);
-
-	}
-
-	/**
-	 *	get
-	 *
-	 *	Shortcut method for GET route request. {@see Nimbl\Router::route}
-	 *
-	 *	@param string $routePattern Route map pattern.
-	 *	@param callable $callback Route callback.
-	 *	@param callable $filter Route filter callback.
+	 *	@param string $method Method name.
+	 *	@param array $arguments Method arguments.
 	 *
 	 *	@return void
 	 */
-	public static function get($routePattern, Callable $callback, Callable $filter = null) {
+	public static function __callStatic($method, $arguments) {
 
-		return self::route(self::HTTP_GET, $routePattern, $callback, $filter);
+		$method = strtoupper($method);
 
-	}
+		if(in_array($method, self::requestMethods()) === true || $method === 'ANY') {
 
-	/**
-	 *	post
-	 *
-	 *	Shortcut method for POST route request. {@see Nimbl\Router::route}
-	 *
-	 *	@param string $routePattern Route map pattern.
-	 *	@param callable $callback Route callback.
-	 *	@param callable $filter Route filter callback.
-	 *
-	 *	@return void
-	 */
-	public static function post($routePattern, Callable $callback, Callable $filter = null) {
+			list($routePattern, $callback, $filter) = $arguments;
 
-		return self::route(self::HTTP_POST, $routePattern, $callback, $filter);
+			self::route($method, $routePattern, $callback, $filter);
 
-	}
-
-	/**
-	 *	put
-	 *
-	 *	Shortcut method for PUT route request. {@see Nimbl\Router::route}
-	 *
-	 *	@param string $routePattern Route map pattern.
-	 *	@param callable $callback Route callback.
-	 *	@param callable $filter Route filter callback.
-	 *
-	 *	@return void
-	 */
-	public static function put($routePattern, Callable $callback, Callable $filter = null) {
-
-		return self::route(self::HTTP_PUT, $routePattern, $callback, $filter);
-
-	}
-
-	/**
-	 *	delete
-	 *
-	 *	Shortcut method for DELETE route request. {@see Nimbl\Router::route}
-	 *
-	 *	@param string $routePattern Route map pattern.
-	 *	@param callable $callback Route callback.
-	 *	@param callable $filter Route filter callback.
-	 *
-	 *	@return void
-	 */
-	public static function delete($routePattern, Callable $callback, Callable $filter = null) {
-
-		return self::route(self::HTTP_DELETE, $routePattern, $callback, $filter);
-
-	}
-
-	/**
-	 *	head
-	 *
-	 *	Shortcut method for HEAD route request. {@see Nimbl\Router::route}
-	 *
-	 *	@param string $routePattern Route map pattern.
-	 *	@param callable $callback Route callback.
-	 *	@param callable $filter Route filter callback.
-	 *
-	 *	@return void
-	 */
-	public static function head($routePattern, Callable $callback, Callable $filter = null) {
-
-		return self::route(self::HTTP_POST, $routePattern, $callback, $filter);
-
-	}
-
-	/**
-	 *	options
-	 *
-	 *	Shortcut method for OPTIONS route request. {@see Nimbl\Router::route}
-	 *
-	 *	@param string $routePattern Route map pattern.
-	 *	@param callable $callback Route callback.
-	 *	@param callable $filter Route filter callback.
-	 *
-	 *	@return void
-	 */
-	public static function options($routePattern, Callable $callback, Callable $filter = null) {
-
-		return self::route(self::HTTP_POST, $routePattern, $callback, $filter);
+		}
 
 	}
 
@@ -329,7 +216,19 @@ class Router {
 	 */
 	public static function dispatch() {
 
-		$errorRouteObject = self::$routeMaps['404'][self::HTTP_GET];
+		$errorRouteObject = self::$routeMaps['error'][self::requestMethod()];
+
+		if(is_object($errorRouteObject) === false) {
+
+			$errorRouteObject = (object) [
+				'callback' => function() {
+
+					return '404 Not Found';
+
+				}
+			];
+
+		}
 
 		foreach(self::$routeMaps as $routePattern => $request) {
 
